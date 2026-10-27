@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi persona favorita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #fdfbf7 0%, #f7ede6 50%, #f4d6cc 100%);
+            --card-bg: #fffbf9;
+            --primary-color: #5c2c2c;
+            --accent-color: #d46a6a;
+            --soft-accent: #f7d6d0;
+            --text-main: #4a3b3b;
+            --text-muted: #8c7878;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 400px;
+            min-height: 100vh;
+            background-color: var(--card-bg);
+            box-shadow: 0 15px 40px rgba(92, 44, 44, 0.12);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            overflow-y: auto;
+        }
+
+        .screen::-webkit-scrollbar {
+            width: 4px;
+        }
+        .screen::-webkit-scrollbar-thumb {
+            background-color: var(--soft-accent);
+            border-radius: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- PANTALLA 1: DESBLOQUEO --- */
+        #lockScreen {
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .lock-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .lock-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .heart-btn {
+            background: none;
+            border: none;
+            font-size: 4.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            user-select: none;
+            outline: none;
+            filter: drop-shadow(0 6px 15px rgba(212, 106, 106, 0.35));
+            position: relative;
+            z-index: 5;
+        }
+
+        .heart-btn:active {
+            transform: scale(0.85);
+        }
+
+        .progress-bar-container {
+            width: 180px;
+            height: 6px;
+            background-color: var(--soft-accent);
+            border-radius: 10px;
+            margin-top: 35px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), #c0392b);
+            transition: width 0.3s ease;
+        }
+
+        /* --- PARTÍCULAS --- */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            z-index: 10;
+            animation: floatUpAndFade 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes floatUpAndFade {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0.6) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(1.4) rotate(var(--rot));
+            }
+        }
+
+        /* --- PANTALLA 2: CONTENIDO --- */
+        #mainScreen {
+            justify-content: flex-start;
+            padding-bottom: 60px;
+            gap: 25px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .header-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--primary-color);
+        }
+
+        .date-badge {
+            display: inline-block;
+            font-size: 0.8rem;
+            background-color: var(--soft-accent);
+            color: var(--primary-color);
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-top: 6px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(212, 106, 106, 0.15);
+        }
+
+        /* --- CELULAR --- */
+        .phone-stage {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .paper-note {
+            align-self: flex-end;
+            margin-right: 15px;
+            margin-bottom: -10px;
+            background: #fff9d6;
+            border: 1px solid #e6d385;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b5814;
+            border-radius: 4px;
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.08);
+            transform: rotate(4deg);
+            z-index: 12;
+            position: relative;
+        }
+
+        .paper-note::before {
+            content: '📌';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+        }
+
+        .photo-phone-wrapper {
+            position: relative;
+            width: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .power-btn-physical {
+            position: absolute;
+            right: -14px;
+            top: 70px;
+            width: 7px;
+            height: 45px;
+            background: #444;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+            transition: background 0.2s, transform 0.1s;
+            z-index: 15;
+        }
+
+        .power-btn-physical:active {
+            transform: scaleX(0.7);
+            background: #c0392b;
+        }
+
+        .phone-mockup {
+            width: 100%;
+            background-color: #1a1a1a;
+            border: 7px solid #222;
+            border-radius: 32px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 400px;
+        }
+
+        .phone-status-bar {
+            height: 22px;
+            background-color: rgba(247, 237, 230, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #5c2c2c;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 4px;
+            font-size: 0.6rem;
+        }
+
+        .phone-display {
+            height: 345px;
+            position: relative;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .phone-off-screen {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 0.75rem;
+            user-select: none;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .phone-home-screen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, #ffc3a0 0%, #ffa8a8 50%, #e27d60 100%),
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80');
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            z-index: 2;
+        }
+
+        .app-icon {
+            width: 58px;
+            height: 58px;
+            background: #ffffff;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .app-icon:active {
+            transform: scale(0.9);
+        }
+
+        .app-icon span {
+            font-size: 1.8rem;
+        }
+
+        .app-label {
+            font-size: 0.65rem;
+            color: #ffffff;
+            margin-top: 6px;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+        }
+
+        .phone-gallery-grid {
+            position: absolute;
+            inset: 0;
+            background: #fff8f6;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            z-index: 3;
+        }
+
+        .gallery-header {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .grid-thumb {
+            width: 100%;
+            height: 125px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .grid-thumb:hover {
+            transform: scale(1.03);
+        }
+
+        .phone-single-photo {
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            z-index: 4;
+        }
+
+        .phone-single-photo img {
+            width: 100%;
+            height: 270px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .polaroid-caption {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.8rem;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .phone-nav-bar {
+            height: 32px;
+            background-color: #f7ede6;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #5c2c2c;
+            border-top: 1px solid #ebdcd0;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .nav-key {
+            cursor: pointer;
+            padding: 2px 10px;
+            transition: opacity 0.2s;
+        }
+
+        .nav-key:active {
+            opacity: 0.5;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--soft-accent);
+            color: var(--primary-color);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+
+        .carousel-btn:hover { transform: scale(1.1); }
+        .prev-btn { left: -12px; }
+        .next-btn { right: -12px; }
+
+        /* --- SECCIÓN SOBRE Y CARTA (ESPACIO AMPLIADO PARA NO TAPAR EL CELULAR) --- */
+        .envelope-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 170px; /* Margen superior amplio para despliegue cómodo */
+            margin-bottom: 20px;
+            perspective: 1000px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .envelope {
+            position: relative;
+            width: 280px;
+            height: 170px;
+            background-color: #d1ab88;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-top: 85px solid transparent;
+            border-bottom: 85px solid transparent;
+            border-left: 140px solid #e2bd9c;
+            z-index: 3;
+        }
+
+        .envelope::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-top: 85px solid transparent;
+            border-bottom: 85px solid transparent;
+            border-right: 140px solid #e2bd9c;
+            z-index: 3;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 100px solid #e5c1a1;
+            transform-origin: top;
+            transition: transform 0.6s ease, z-index 0.6s ease;
+            z-index: 4;
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-bottom: 105px solid #ecc9ad;
+            border-radius: 0 0 10px 10px;
+            z-index: 4;
+        }
+
+        .letter-paper {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 250px;
+            height: 140px;
+            background: #fffdfa;
+            border: 1px solid #e8dec8;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            z-index: 2;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), height 0.8s ease;
+            overflow-y: hidden;
+            font-size: 0.78rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            pointer-events: none;
+        }
+
+        .wax-seal-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.4);
+            z-index: 10;
+            transition: transform 0.3s ease, background 0.3s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid #f5b7b1;
+            cursor: pointer;
+        }
+
+        .wax-seal-btn:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope.open .letter-paper {
+            transform: translateY(-130px);
+            height: 220px;
+            pointer-events: auto;
+            z-index: 5;
+            overflow-y: auto;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- ANIMACIÓN DE BRINDIS CON COPAS DE VINO 🍷 INDEPENDIENTES Y MÁS CERCANAS --- */
+        .toast-section {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            border: 1px solid var(--soft-accent);
+            width: 90%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+
+        .glasses-container {
+            font-size: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px; /* Las separamos más desde el inicio */
+            margin-bottom: 8px;
+        }
+
+        .glass-left {
+            display: inline-block;
+            animation: moveWineLeft 1.6s infinite ease-in-out;
+        }
+
+        .glass-right {
+            display: inline-block;
+            animation: moveWineRight 1.6s infinite ease-in-out;
+        }
+
+        @keyframes moveWineLeft {
+            0%, 100% { transform: translateX(-25px) rotate(-15deg); }
+            50% { transform: translateX(30px) rotate(12deg); } /* Viajan hacia el centro y chocan */
+        }
+
+        @keyframes moveWineRight {
+            0%, 100% { transform: translateX(25px) rotate(15deg); }
+            50% { transform: translateX(-30px) rotate(-12deg); } /* Viajan hacia el centro y chocan */
+        }
+
+        .toast-note {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* --- FOTO POLAROID INCLINADA ("ultima.jpg") --- */
+        .polaroid-single-card {
+            background: #ffffff;
+            padding: 12px 12px 18px 12px;
+            width: 240px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 4px;
+            transform: rotate(-3deg);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .polaroid-single-card:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .polaroid-single-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 2px;
+            margin-bottom: 8px;
+        }
+
+        /* --- NOTA DE PAPEL LITERAL Y LÁPIZ GRANDE INCLINADOS --- */
+        .literal-note-pencil-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 95%;
+            margin: 5px 0;
+        }
+
+        .literal-paper-note {
+            background: #fffef2;
+            border: 1px solid #e0d0b8;
+            padding: 18px 20px;
+            width: 210px;
+            min-height: 110px;
+            border-radius: 3px;
+            box-shadow: 3px 5px 15px rgba(0,0,0,0.08);
+            transform: rotate(-4deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .literal-paper-note::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #d46a6a;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .literal-paper-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.88rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .literal-big-pencil {
+            width: 65px;
+            height: auto;
+            transform: rotate(15deg);
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15));
+            animation: pencilSlightMove 2s infinite ease-in-out;
+        }
+
+        @keyframes pencilSlightMove {
+            0%, 100% { transform: rotate(15deg) translateY(0); }
+            50% { transform: rotate(18deg) translateY(-4px); }
+        }
+
+        /* --- PIE DE PÁGINA Y CRÉDITOS --- */
+        .footer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .reset-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(92, 44, 44, 0.25);
+            transition: background-color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .reset-btn:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.03);
+        }
+
+        .footer-signature {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .footer-credits {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            opacity: 0.85;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+
+        <!-- PANTALLA 1: Desbloqueo por toque -->
+        <div class="screen" id="lockScreen">
+            <h1 class="lock-title" id="lockName">Carli</h1>
+            <p class="lock-subtitle" id="lockInstruction">Toca el corazón</p>
+            <button class="heart-btn" id="heartBtn">❤️</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 2: Contenido Romántico Ordenado -->
+        <div class="screen main-screen hidden" id="mainScreen">
+            <div class="header-section">
+                <h2>Hoy es el cumpleaños de mi persona favorita</h2>
+                <span class="date-badge">30 de Octubre</span>
+            </div>
+
+            <!-- 1. ESCENARIO DEL CELULAR -->
+            <div class="phone-stage">
+                <div class="paper-note">Prende el celular 👈</div>
+
+                <div class="photo-phone-wrapper">
+                    <div class="power-btn-physical" id="powerBtn" title="Prender / Apagar"></div>
+                    
+                    <button class="carousel-btn prev-btn hidden" id="prevBtn">❮</button>
+                    
+                    <div class="phone-mockup">
+                        <div class="phone-status-bar">
+                            <span id="clockTime">12:00</span>
+                            <div class="status-icons">
+                                <span>📶</span>
+                                <span>🛜</span>
+                                <span>🔋</span>
+                            </div>
+                        </div>
+
+                        <div class="phone-display">
+                            <div class="phone-off-screen" id="offScreen">
+                                <span>Presiona el botón lateral para encender</span>
+                            </div>
+
+                            <div class="phone-home-screen hidden" id="homeScreen">
+                                <div class="app-icon" id="galleryAppBtn">
+                                    <span>🖼️</span>
+                                </div>
+                                <span class="app-label">Galería</span>
+                            </div>
+
+                            <div class="phone-gallery-grid hidden" id="galleryGridScreen">
+                                <div class="gallery-header">Álbum de Recuerdos</div>
+                                <div class="grid-container">
+                                    <img src="img/foto1.jpg" class="grid-thumb" data-index="0" alt="Foto 1">
+                                    <img src="img/foto2.jpg" class="grid-thumb" data-index="1" alt="Foto 2">
+                                    <img src="img/foto3.jpg" class="grid-thumb" data-index="2" alt="Foto 3">
+                                    <img src="img/foto4.jpg" class="grid-thumb" data-index="3" alt="Foto 4">
+                                </div>
+                            </div>
+
+                            <div class="phone-single-photo hidden" id="singlePhotoScreen">
+                                <img id="polaroidImg" src="img/foto1.jpg" alt="Foto ampliada">
+                                <p class="polaroid-caption" id="polaroidCaption">Nuestros momentos favoritos ❤️</p>
+                            </div>
+                        </div>
+
+                        <div class="phone-nav-bar">
+                            <span class="nav-key" id="navRecents" title="Recientes">◻</span>
+                            <span class="nav-key" id="navHome" title="Inicio">◯</span>
+                            <span class="nav-key" id="navBack" title="Atrás">◁</span>
+                        </div>
+                    </div>
+
+                    <button class="carousel-btn next-btn hidden" id="nextBtn">❯</button>
+                </div>
+            </div>
+
+            <!-- 2. SECCIÓN SOBRE Y CARTA (CON ESPACIO Y SIN MONTAJES) -->
+            <div class="envelope-container">
+                <div class="envelope" id="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-pocket"></div>
+                    
+                    <div class="letter-paper" id="letterPaper">
+                        <div class="poem-content">
+                            <p>
+                                <strong>Feliz cumpleaños, mi vida.</strong><br><br>
+                                Qué gran privilegio es verte cumplir un año más y seguir compartiendo los días a tu lado.<br><br>
+                                Me encanta lo que somos, la complicidad que tenemos y la paz que se siente en cada momento contigo. Eres una mujer increíble, de esas que dejan huella con solo estar, y verte sonreír es, sin duda, de mis cosas favoritas en el mundo.<br><br>
+                                Brindo por ti, por tus metas, por tu felicidad y por todo lo bueno que te sigue esperando. Que este nuevo año te traiga tanta alegría como la que tú le regalas a mi vida.<br><br>
+                                Te quiero muchísimo. ❤️
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="wax-seal-btn" id="openEnvelopeBtn">💌 Toca para abrir</div>
+                </div>
+            </div>
+
+            <!-- 3. ANIMACIÓN DE BRINDIS DE VINO 🍷 (COPAS SEPARADAS QUE CHOCAN) -->
+            <div class="toast-section">
+                <div class="glasses-container">
+                    <span class="glass-left">🍷</span>
+                    <span class="glass-right">🍷</span>
+                </div>
+                <div class="toast-note">Por muchos más cumpleaños juntos</div>
+            </div>
+
+            <!-- 4. FOTO POLAROID INCLINADA ("ultima.jpg") -->
+            <div class="polaroid-single-card">
+                <img src="img/ultima.jpg" alt="Foto especial">
+                <p class="polaroid-caption">Inolvidable a tu lado 💫</p>
+            </div>
+
+            <!-- 5. NOTA DE PAPEL LITERAL Y LÁPIZ GRANDE -->
+            <div class="literal-note-pencil-wrapper">
+                <div class="literal-paper-note">
+                    <span class="literal-paper-text">Gracias por compartir tu vida conmigo.</span>
+                </div>
+                <svg class="literal-big-pencil" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.25 3.75L20.25 6.75L7.5 19.5H4.5V16.5L17.25 3.75Z" fill="#e2bd9c" stroke="#5c2c2c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14.5 6.5L17.5 9.5" stroke="#5c2c2c" stroke-width="1.5"/>
+                    <path d="M4.5 19.5L7.5 19.5L4.5 16.5L4.5 19.5Z" fill="#d46a6a"/>
+                    <path d="M2.5 21.5L4.5 19.5L1.5 18.5L2.5 21.5Z" fill="#333"/>
+                </svg>
+            </div>
+
+            <!-- 6. PIE DE PÁGINA, CRÉDITOS Y BOTÓN DE REINICIO -->
+            <div class="footer-container">
+                <button class="reset-btn" id="resetBtn">🔄 Guardar recuerdo</button>
+                <div class="footer-signature">HECHO CON AMOR ❤️</div>
+                <div class="footer-credits">Idea original de Efraín | Creador: AvenciniART</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Reloj en Vivo ---
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('clockTime').textContent = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- 1. Lógica de Desbloqueo por Corazón ---
+        const heartBtn = document.getElementById('heartBtn');
+        const progressBar = document.getElementById('progressBar');
+        const lockScreen = document.getElementById('lockScreen');
+        const mainScreen = document.getElementById('mainScreen');
+        const lockInstruction = document.getElementById('lockInstruction');
+
+        let clicks = 0;
+        const totalClicks = 5;
+
+        const heartMessages = [
+            "Toca el corazón",
+            "¡Toca otra vez! ❤️",
+            "¡Ya casi! 💕",
+            "¡Un toque más! ✨",
+            "¡Abriendo regalo! 🎉"
+        ];
+
+        const particlesPool = ['💖', '💕', '💗', '✨', '⭐', '🎊', '🎉'];
+
+        function spawnParticles(count, clickIndex) {
+            const rect = heartBtn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('span');
+                particle.className = 'particle';
+
+                let symbol;
+                if (clickIndex === 1) {
+                    symbol = '❤️';
+                } else if (clickIndex < 3) {
+                    symbol = ['❤️', '💖', '✨'][Math.floor(Math.random() * 3)];
+                } else {
+                    symbol = particlesPool[Math.floor(Math.random() * particlesPool.length)];
+                }
+
+                particle.textContent = symbol;
+
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 60 + Math.random() * (40 * clickIndex); 
+                const dx = Math.cos(angle) * distance + 'px';
+                const dy = (Math.sin(angle) * distance - 40) + 'px'; 
+                const rot = (Math.random() * 360 - 180) + 'deg';
+                const size = (0.9 + Math.random() * 0.8) + 'rem';
+
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.fontSize = size;
+                particle.style.setProperty('--dx', dx);
+                particle.style.setProperty('--dy', dy);
+                particle.style.setProperty('--rot', rot);
+
+                document.body.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 1200);
+            }
+        }
+
+        heartBtn.addEventListener('click', () => {
+            clicks++;
+            const progress = (clicks / totalClicks) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            if (clicks < totalClicks && lockInstruction) {
+                lockInstruction.textContent = heartMessages[clicks];
+            }
+
+            const particleAmount = Math.pow(clicks, 2);
+            spawnParticles(particleAmount, clicks);
+
+            heartBtn.style.transform = 'scale(1.25)';
+            setTimeout(() => {
+                heartBtn.style.transform = 'scale(1)';
+            }, 150);
+
+            if (clicks >= totalClicks) {
+                if (lockInstruction) lockInstruction.textContent = heartMessages[4];
+                setTimeout(() => {
+                    lockScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        lockScreen.classList.add('hidden');
+                        mainScreen.classList.remove('hidden');
+                    }, 500);
+                }, 500);
+            }
+        });
+
+        // --- 2. Lógica del Celular Interactivo ---
+        const powerBtn = document.getElementById('powerBtn');
+        const offScreen = document.getElementById('offScreen');
+        const homeScreen = document.getElementById('homeScreen');
+        const galleryGridScreen = document.getElementById('galleryGridScreen');
+        const singlePhotoScreen = document.getElementById('singlePhotoScreen');
+        const galleryAppBtn = document.getElementById('galleryAppBtn');
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const navHome = document.getElementById('navHome');
+        const navBack = document.getElementById('navBack');
+        const navRecents = document.getElementById('navRecents');
+
+        let isPhoneOn = false;
+        let currentScreen = 'off';
+
+        powerBtn.addEventListener('click', () => {
+            if (isPhoneOn) {
+                isPhoneOn = false;
+                currentScreen = 'off';
+                offScreen.classList.remove('hidden');
+                homeScreen.classList.add('hidden');
+                galleryGridScreen.classList.add('hidden');
+                singlePhotoScreen.classList.add('hidden');
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            } else {
+                isPhoneOn = true;
+                currentScreen = 'home';
+                offScreen.classList.add('hidden');
+                homeScreen.classList.remove('hidden');
+                galleryGridScreen.classList.add('hidden');
+                singlePhotoScreen.classList.add('hidden');
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+        });
+
+        galleryAppBtn.addEventListener('click', () => {
+            if (!isPhoneOn) return;
+            currentScreen = 'grid';
+            homeScreen.classList.add('hidden');
+            galleryGridScreen.classList.remove('hidden');
+        });
+
+        // --- 3. Carrusel de 4 Fotos ---
+        const photos = [
+            {
+                url: "img/foto1.jpg",
+                caption: "Nuestros momentos favoritos ❤️"
+            },
+            {
+                url: "img/foto2.jpg",
+                caption: "Cada sonrisa a tu lado ✨"
+            },
+            {
+                url: "img/foto3.jpg",
+                caption: "Las mejores aventuras juntas 🌟"
+            },
+            {
+                url: "img/foto4.jpg",
+                caption: "Por muchos capítulos más juntos 🎉"
+            }
+        ];
+
+        const polaroidImg = document.getElementById('polaroidImg');
+        const polaroidCaption = document.getElementById('polaroidCaption');
+        const gridThumbs = document.querySelectorAll('.grid-thumb');
+        let currentPhotoIndex = 0;
+
+        function openPhoto(index) {
+            currentPhotoIndex = index;
+            polaroidImg.src = photos[index].url;
+            polaroidCaption.textContent = photos[index].caption;
+
+            currentScreen = 'single';
+            galleryGridScreen.classList.add('hidden');
+            singlePhotoScreen.classList.remove('hidden');
+            prevBtn.classList.remove('hidden');
+            nextBtn.classList.remove('hidden');
+        }
+
+        gridThumbs.forEach(thumb => {
+            thumb.addEventListener('click', (e) => {
+                const idx = parseInt(e.target.getAttribute('data-index'));
+                openPhoto(idx);
+            });
+        });
+
+        function updatePhoto(index) {
+            currentPhotoIndex = index;
+            polaroidImg.src = photos[index].url;
+            polaroidCaption.textContent = photos[index].caption;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentScreen !== 'single') return;
+            currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+            updatePhoto(currentPhotoIndex);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentScreen !== 'single') return;
+            currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+            updatePhoto(currentPhotoIndex);
+        });
+
+        // --- 4. Funcionalidad de los 3 Botones Android ---
+        navHome.addEventListener('click', () => {
+            if (!isPhoneOn) return;
+            currentScreen = 'home';
+            homeScreen.classList.remove('hidden');
+            galleryGridScreen.classList.add('hidden');
+            singlePhotoScreen.classList.add('hidden');
+            prevBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+        });
+
+        navBack.addEventListener('click', () => {
+            if (!isPhoneOn) return;
+            if (currentScreen === 'single') {
+                currentScreen = 'grid';
+                singlePhotoScreen.classList.add('hidden');
+                galleryGridScreen.classList.remove('hidden');
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            } else if (currentScreen === 'grid') {
+                currentScreen = 'home';
+                galleryGridScreen.classList.add('hidden');
+                homeScreen.classList.remove('hidden');
+            }
+        });
+
+        navRecents.addEventListener('click', () => {
+            if (!isPhoneOn) return;
+            if (currentScreen !== 'off') {
+                currentScreen = 'grid';
+                homeScreen.classList.add('hidden');
+                singlePhotoScreen.classList.add('hidden');
+                galleryGridScreen.classList.remove('hidden');
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+        });
+
+        // --- 5. Lógica del Sobre Interactiva ---
+        const envelope = document.getElementById('envelope');
+        const openEnvelopeBtn = document.getElementById('openEnvelopeBtn');
+
+        if (envelope && openEnvelopeBtn) {
+            openEnvelopeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!envelope.classList.contains('open')) {
+                    envelope.classList.add('open');
+                    openEnvelopeBtn.innerHTML = "💌 Toca para guardar la carta";
+                } else {
+                    envelope.classList.remove('open');
+                    openEnvelopeBtn.innerHTML = "💌 Toca para abrir";
+                }
+            });
+
+            envelope.addEventListener('click', (e) => {
+                if (envelope.classList.contains('open') && e.target.closest('.letter-paper')) {
+                    envelope.classList.remove('open');
+                    openEnvelopeBtn.innerHTML = "💌 Toca para abrir";
+                }
+            });
+        }
+
+        // --- 6. Botón de Reinicio ---
+        const resetBtn = document.getElementById('resetBtn');
+        resetBtn.addEventListener('click', () => {
+            location.reload();
+        });
+    </script>
+</body>
+</html>
